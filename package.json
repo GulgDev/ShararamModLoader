@@ -1,0 +1,20 @@
+{
+  "name": "shararammodloader",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "Стартовый проект загрузчиков модов для Шарарама",
+  "scripts": {
+    "start": "electron .",
+    "build": "npx electron-packager . --overwrite --asar --extra-resource=natives --ignore=^/natives --ignore=^/swf"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^9.0.0",
+    "electron-packager": "^17.1.1"
+  },
+  "dependencies": {
+    "electron-log": "^5.3.0"
+  }
+}
