@@ -1,20 +1,60 @@
 {
   "name": "shararammodloader",
-  "version": "0.1.1",
-  "main": "main.js",
-  "description": "Стартовый проект загрузчиков модов для Шарарама",
+  "productName": "ShararamModLoader",
+  "version": "0.2.0",
+  "main": "src/index.js",
+  "description": "Загрузчик модов для Шарарама",
   "scripts": {
-    "start": "electron .",
-    "build": "npx electron-packager . --overwrite --asar --extra-resource=natives --ignore=^/natives --ignore=^/swf"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "asar": true,
+        "icon": "res/shararam",
+        "extraResource": ["swf", "natives"],
+        "ignore": [".gitignore", "swf", "natives"]
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "electron_quick_start"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   },
   "keywords": [],
-  "author": "",
+  "author": "gulg",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^9.0.0",
-    "electron-packager": "^17.1.1"
+    "@electron-forge/cli": "^6.4.2",
+    "@electron-forge/maker-deb": "^6.4.2",
+    "@electron-forge/maker-rpm": "^6.4.2",
+    "@electron-forge/maker-squirrel": "^6.4.2",
+    "@electron-forge/maker-zip": "^6.4.2",
+    "electron": "^9.0.0"
   },
   "dependencies": {
-    "electron-log": "^5.3.0"
+    "electron-log": "^5.3.0",
+    "electron-squirrel-startup": "^1.0.1"
   }
 }

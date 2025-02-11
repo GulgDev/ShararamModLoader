@@ -11,20 +11,21 @@ const WIN_WIDTH = 1320;
 const WIN_HEIGHT = 740;
 const SHARARAM_UA = "Shararam/2.0.6";
 
-class Main {
+class Launcher {
     constructor() {
         log.transports.file.level = "debug";
         log.info(`${app.getName()} ${app.getVersion()} starting`);
 
-        this._pathNatives = path.join(process.resourcesPath, "natives");
-        if (!fs.existsSync(this._pathNatives))
-            this._pathNatives = path.join(__dirname, "natives");
-    
-        this._pathSwf = path.join(process.resourcesPath, "swf");
-        if (!fs.existsSync(this._pathSwf))
-            this._pathSwf = path.join(__dirname, "swf");
+        this._pathNatives = this._getResourcePath("natives");
+        this._pathSwf = this._getResourcePath("swf");
 
         this._initFlash();
+    }
+
+    _getResourcePath(resPath) {
+        return app.isPackaged ?
+            path.resolve(process.resourcesPath, resPath) :
+            path.resolve(__dirname, "..", resPath);
     }
 
     _initFlash() {
@@ -148,7 +149,7 @@ class Main {
 
         this._wndMain.webContents.setUserAgent(
             this._wndMain.webContents.getUserAgent()
-                .replace(`${app.name}/${app.getVersion()}`, SHARARAM_UA)
+                .replace(`${app.getName().replace(/ /g, "")}/${app.getVersion()}`, SHARARAM_UA)
         );
         this._wndMain.loadURL(URL_MAIN);
     }
@@ -177,7 +178,7 @@ class Main {
             }
         ]);
 
-        this._tray = new electron.Tray(`${__dirname}/shararam.ico`);
+        this._tray = new electron.Tray(path.join(__dirname, "../res/shararam.ico"));
         this._tray.setToolTip("Шарарам*");
         this._tray.setContextMenu(contextMenu);
         this._tray.on("click", () => this._showMainWindow());
@@ -198,6 +199,11 @@ class Main {
     start = () => this._onStart();
 }
 
-(() => {
-    new Main().start();
-})();
+function main() {
+    if (require("electron-squirrel-startup")) app.quit();
+
+    const launcher = new Launcher();
+    launcher.start();
+}
+
+main();
