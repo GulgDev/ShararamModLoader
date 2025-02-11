@@ -1,6 +1,6 @@
 {
   "name": "shararammodloader",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "main.js",
   "description": "Стартовый проект загрузчиков модов для Шарарама",
   "scripts": {

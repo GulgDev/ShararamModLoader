@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const log = require("electron-log");
 const electron = require("electron");
-const { protocol, app, net, shell, session } = electron;
+const { protocol, app, shell, net, session } = electron;
 
 const URL_MAIN = "https://www.shararam.ru/";
 const BKG_COLOR = "#60b3b3";
@@ -33,60 +33,46 @@ class Main {
         app.commandLine.appendSwitch("ppapi-flash-version", "23.0.0.164");
     }
 
-    _registerScheme() {
-        protocol.registerSchemesAsPrivileged([
-            {
-                scheme: "shararam",
-                privileges: {
-                    standard: true,
-                    secure: true,
-                    bypassCSP: true,
-                    supportFetchAPI: true
-                }
-            }
-        ]);
-    }
-
     _registerProtocol() {
         protocol.interceptBufferProtocol("https", async (req, callback) => {
-            protocol.uninterceptProtocol("https");
-
             const request = net.request({
+                url: req.url,
                 method: req.method,
-                headers: req.headers,
-                url: req.url
+                partition: "persist:fetch",
+                useSessionCookies: true
             });
-            const cookies = await session.defaultSession.cookies.get({});
-            request.setHeader("Cookie",
-                cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ")
-            );
-
+            for (const [header, value] of Object.entries(req.headers))
+                if (header !== "Cookie")
+                    request.setHeader(header, value);
             if (req.uploadData)
                 for (const data of req.uploadData)
                     request.write(data.bytes);
+            request.end();
 
-            request.on("response", (response) => {
-                const chunks = [];
-        
-                response.on("data", (chunk) => chunks.push(chunk));
-                response.on("end", () => {
-                    this._processRequest(req, Buffer.concat(chunks), callback);
+            request.on("response", (res) => {
+                const data = [];
+                res.on("data", (chunk) => data.push(chunk));
+                res.on("end", () => {
+                    let body = Buffer.concat(data);
+                    body = this._processRequest(req, body);
+                    callback({
+                        statusCode: res.statusCode,
+                        headers: res.headers,
+                        data: body
+                    });
+                });
+                res.on("error", () => {
+                    callback({ error: -100 });
                 });
             });
 
-            request.on("error", () => {});
-        
-            request.end();
-
-            request.on("finish", () => {
-                setTimeout(() => 
-                    setTimeout(() => this._registerProtocol()) // FIXME: This is very unreliable
-                );
+            request.on("error", () => {
+                callback({ error: -104 });
             });
         });
     }
 
-    _processRequest(req, data, callback) {
+    _processRequest(req, data) {
         const url = new URL(req.url);
         switch (url.hostname) {
             case "www.shararam.ru":
@@ -96,20 +82,15 @@ class Main {
                     const localPath = path.join(this._pathSwf, url.pathname.slice(1).replace(/^fs\//, ""));
                     if (fs.existsSync(localPath)) {
                         log.debug(`Found patch for ${url.pathname}, sending local file`);
-                        callback(fs.readFileSync(localPath));
-                        break;
+                        return fs.readFileSync(localPath);
                     }
                     log.debug(`Patch not found, sending server file`);
                 }
-            default:
-                callback(data);
-                break;
         }
+        return data;
     }
 
     _onStart() {
-        this._registerScheme();
-
         const instanceLock = app.requestSingleInstanceLock();
         if (instanceLock) {
             app.on("second-instance", () => this._onSecondInstance());
