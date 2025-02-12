@@ -3,7 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const log = require("electron-log");
 const electron = require("electron");
-const { protocol, app, shell, net, session } = electron;
+const { protocol, app, shell, session } = electron;
+const { ProxyHandler } = require("./proxy");
 
 const URL_MAIN = "https://www.shararam.ru/";
 const BKG_COLOR = "#60b3b3";
@@ -20,6 +21,7 @@ class Launcher {
         this._pathSwf = this._getResourcePath("swf");
 
         this._initFlash();
+        this._initProxy();
     }
 
     _getResourcePath(resPath) {
@@ -34,47 +36,26 @@ class Launcher {
         app.commandLine.appendSwitch("ppapi-flash-version", "23.0.0.164");
     }
 
-    _registerProtocol() {
-        protocol.interceptBufferProtocol("https", async (req, callback) => {
-            const request = net.request({
-                url: req.url,
-                method: req.method,
-                partition: "persist:fetch",
-                useSessionCookies: true
-            });
-            for (const [header, value] of Object.entries(req.headers))
-                if (header !== "Cookie")
-                    request.setHeader(header, value);
-            if (req.uploadData)
-                for (const data of req.uploadData)
-                    request.write(data.bytes);
-            request.end();
-
-            request.on("response", (res) => {
-                const data = [];
-                res.on("data", (chunk) => data.push(chunk));
-                res.on("end", () => {
-                    let body = Buffer.concat(data);
-                    body = this._processRequest(req, body);
-                    callback({
-                        statusCode: res.statusCode,
-                        headers: res.headers,
-                        data: body
-                    });
-                });
-                res.on("error", () => {
-                    callback({ error: -100 });
-                });
-            });
-
-            request.on("error", () => {
-                callback({ error: -104 });
-            });
-        });
+    _initProxy() {
+        this._proxy = new ProxyHandler();
+        this._proxy.on("request", this._requestHandler);
+        this._proxy.on("response", this._responseHandler);
     }
 
-    _processRequest(req, data) {
+    _registerProtocols() {
+        protocol.interceptBufferProtocol("https", this._proxy.handle);
+    }
+
+    _requestHandler = (req) => {
         const url = new URL(req.url);
+        url.searchParams.delete("noproxy");
+        req.url = url.href;
+    };
+
+    _responseHandler = (req, res) => {
+        const url = new URL(req.url);
+        if (url.searchParams.has("noproxy"))
+            return;
         switch (url.hostname) {
             case "www.shararam.ru":
             case "shararam.ru":
@@ -83,13 +64,14 @@ class Launcher {
                     const localPath = path.join(this._pathSwf, url.pathname.slice(1).replace(/^fs\//, ""));
                     if (fs.existsSync(localPath)) {
                         log.debug(`Found patch for ${url.pathname}, sending local file`);
-                        return fs.readFileSync(localPath);
+                        res.data = fs.readFileSync(localPath);
+                    } else {
+                        log.debug(`Patch not found, sending server file`);
                     }
-                    log.debug(`Patch not found, sending server file`);
                 }
+                break;
         }
-        return data;
-    }
+    };
 
     _onStart() {
         const instanceLock = app.requestSingleInstanceLock();
@@ -113,7 +95,7 @@ class Launcher {
     }
 
     _onReady() {
-        this._registerProtocol();
+        this._registerProtocols();
         this._createStartupWindow();
     }
 

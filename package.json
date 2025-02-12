@@ -1,7 +1,7 @@
 {
   "name": "shararammodloader",
   "productName": "ShararamModLoader",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": "src/index.js",
   "description": "Загрузчик модов для Шарарама",
   "scripts": {
