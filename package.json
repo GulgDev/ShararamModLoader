@@ -1,7 +1,7 @@
 {
   "name": "shararammodloader",
   "productName": "ShararamModLoader",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "main": "src/index.js",
   "description": "Загрузчик модов для Шарарама",
   "scripts": {
@@ -16,7 +16,7 @@
         "asar": true,
         "icon": "res/shararam",
         "extraResource": ["swf", "natives"],
-        "ignore": [".gitignore", "swf", "natives"]
+        "ignore": [".gitignore", "swf", "mods", "natives"]
       },
       "makers": [
         {

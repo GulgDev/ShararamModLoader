@@ -5,6 +5,10 @@ class ProxyHandler extends EventHandler {
     handle = (req, callback) => {
         const requestInfo = { url: req.url, method: req.method };
         this.emit("request", requestInfo);
+        if (requestInfo.response) {
+            callback(requestInfo.response);
+            return;
+        }
 
         const request = net.request({
             ...requestInfo,

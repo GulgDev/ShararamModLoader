@@ -19,6 +19,10 @@ class Launcher {
 
         this._pathNatives = this._getResourcePath("natives");
         this._pathSwf = this._getResourcePath("swf");
+        this._pathMods = this._getResourcePath("mods");
+
+        if (!fs.existsSync(this._pathMods))
+            fs.mkdirSync(this._pathMods);
 
         this._initFlash();
         this._initProxy();
@@ -50,6 +54,24 @@ class Launcher {
         const url = new URL(req.url);
         url.searchParams.delete("noproxy");
         req.url = url.href;
+
+        if (/^(www\.)?shararam\.ru$/.test(url.hostname) && url.pathname.startsWith("/sml/")) {
+            log.debug(`SML request: ${url.pathname}`);
+            if (url.pathname === "/sml/mods.xml") {
+                let xml = "<sml:mods>";
+                for (const mod of fs.readdirSync(this._pathMods)) {
+                    xml += `<sml:mod path="${mod}" />`;
+                }
+                xml += "</sml:mods>";
+                req.response = { data: Buffer.from(xml) };
+            } else if (url.pathname.startsWith("/sml/mods/")) {
+                const swfPath = path.join(this._pathMods, url.pathname.replace(/^\/sml\/mods\//g, ""));
+                if (!/^$|^\.\.\/?/.test(path.relative(this._pathMods, swfPath)) && fs.existsSync(swfPath))
+                    req.response = { data: fs.readFileSync(swfPath) };
+                else
+                    req.response = { statusCode: 404, data: Buffer.from("Resource not found") };
+            }
+        }
     };
 
     _responseHandler = (req, res) => {
