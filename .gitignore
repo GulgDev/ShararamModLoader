@@ -1,4 +1,5 @@
-/node_modules
-/package-lock.json
-/mods
+node_modules/
+mods/
+swf/
+package-lock.json
 out/
