@@ -4,31 +4,31 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="..\SMLLauncher\swf\base.swf" />
+    <movie path="bin\SMLLib.swf" />
     <movie fps="30" />
-    <movie width="815" />
-    <movie height="495" />
-    <movie version="9" />
+    <movie width="800" />
+    <movie height="600" />
+    <movie version="8" />
     <movie minorVersion="0" />
-    <movie platform="Flash Player" />
+    <movie platform="Custom" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="..\SMLLib\include" />
   </classpaths>
   <!-- Build options -->
   <build>
     <option verbose="False" />
     <option strict="False" />
     <option infer="False" />
-    <option useMain="True" />
+    <option includePackage="src" />
+    <option useMain="False" />
     <option useMX="False" />
     <option warnUnusedImports="False" />
-    <option traceMode="FlashConnectExtended" />
+    <option traceMode="Disable" />
     <option traceFunction="" />
-    <option libraryPrefix="" />
+    <option libraryPrefix="SMLLib" />
     <option excludeFile="" />
     <option groupClasses="False" />
     <option frame="1" />
@@ -36,26 +36,25 @@
   </build>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\sml\Main.as" />
-    <compile path="src\global.as" />
-    <compile path="src\TopLevel.as" />
+    <!-- example: <compile path="..." /> -->
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>
-    <asset path="..\SMLLib\bin\SMLLib.swf" />
+    <!-- example: <asset path="..." id="..." update="..." glyphs="..." mode="..." place="..." sharepoint="..." /> -->
   </library>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
+    <hidden path="include" />
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand />
   <!-- Executed after build -->
-  <postBuildCommand alwaysRun="False" />
+  <postBuildCommand alwaysRun="False">"$(ToolsDir)\igen\igen.exe" src include</postBuildCommand>
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Unknown" />
+    <option testMovie="Default" />
     <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->

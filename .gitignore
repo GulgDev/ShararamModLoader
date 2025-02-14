@@ -2,4 +2,6 @@ node_modules/
 mods/
 swf/
 package-lock.json
+bin/
+obj/
 out/

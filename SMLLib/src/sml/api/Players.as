@@ -19,7 +19,7 @@ class sml.api.Players extends ApiClass
 		var _this:Players = this;
 		api.addEventListener("init", function ():Void 
 		{
-			Util.patch(Base.prototype, {
+			Util.patch(_global.Base.prototype, {
 				OnUserDataResult: function ($this:Object, event:Object):Void 
 				{
 					$this.OnUserDataResult.apply(this, [event]);
@@ -33,7 +33,7 @@ class sml.api.Players extends ApiClass
 	{
 		return new Promise(function (resolve:Function, reject:Function):Void 
 		{
-			$.FMSApi.SearchUserByName(name, function (user:Object):Void 
+			_global.$.FMSApi.SearchUserByName(name, function (user:Object):Void 
 			{
 				if (user.UserName === name)
 					resolve(new Player(user.UserId, user.UserName));

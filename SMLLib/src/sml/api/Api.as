@@ -22,7 +22,7 @@ class sml.api.Api extends EventDispatcher
 		var _this:Api = this;
 		this.addEventListener("init", function ():Void 
 		{
-			Util.patch(Base.prototype, {
+			Util.patch(_global.Base.prototype, {
 				OnRTMPConnect: function ($this:Object, event:Object):Void 
 				{
 					$this.OnRTMPConnect.apply(this, [event]);

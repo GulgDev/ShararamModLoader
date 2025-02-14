@@ -20,7 +20,7 @@ class sml.api.Chat extends ApiClass
 		var _this:Chat = this;
 		api.addEventListener("start", function ():Void 
 		{
-			Util.patch(I.FMSApi, {
+			Util.patch(_global.I.FMSApi, {
 				ChatMessage: function ($this:Object, text:String, noDispatch:Boolean):Void 
 				{
 					if (!noDispatch) {
@@ -35,17 +35,17 @@ class sml.api.Chat extends ApiClass
 		});
 		api.addEventListener("connect", function ():Void 
 		{
-			Util.patch(Base.Instance.rtmpConnectionHandler.nc, {
+			Util.patch(_global.Base.Instance.rtmpConnectionHandler.nc, {
 				_C: function ($this:Object, userId:Number, text:String):Void 
 				{
 					var userName:String = undefined;
-					if(I.GameController)
+					if(_global.I.GameController)
 					{
-						userName = $.SelectObject(I.GameController.GetGameUsers(), "ID", userId).Name;
+						userName = _global.$.SelectObject(_global.I.GameController.GetGameUsers(), "ID", userId).Name;
 					}
 					else
 					{
-						var avatar = I.AvatarController.GetUserAvatar(userId);
+						var avatar = _global.I.AvatarController.GetUserAvatar(userId);
 						userName = avatar.AvatarData.Name;
 					}
 					{
@@ -62,7 +62,7 @@ class sml.api.Chat extends ApiClass
 	
 	public function sendMessage(message:String, dispatch:Boolean): Void 
 	{
-		I.FMSApi.ChatMessage(message, !dispatch);
+		_global.I.FMSApi.ChatMessage(message, !dispatch);
 	}
 	
 }

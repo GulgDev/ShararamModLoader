@@ -20,7 +20,7 @@ class sml.Main
 	{
 		System.security.allowDomain("*");
 		var main:Main = new Main();
-		shararam = main.api;
+		Shararam.api = main.api;
 		main.start();
 	}
 	
