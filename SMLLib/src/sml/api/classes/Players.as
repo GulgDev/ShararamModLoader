@@ -1,6 +1,6 @@
 import sml.api.Api;
 import sml.api.ApiClass;
-import sml.api.Player;
+import sml.api.types.Player;
 import sml.api.Players;
 import sml.util.Promise;
 import sml.util.Util;
@@ -8,7 +8,7 @@ import sml.util.Util;
  * ...
  * @author Gulg
  */
-class sml.api.Players extends ApiClass
+class sml.api.classes.Players extends ApiClass
 {
 	
 	public var self:Player;

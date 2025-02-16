@@ -4,14 +4,14 @@ import sml.api.ApiClass;
 import sml.api.Chat;
 import sml.api.events.ChatMessageEvent;
 import sml.api.events.Event;
-import sml.api.Player;
+import sml.api.types.Player;
 import sml.api.events.SendChatMessageEvent;
 import sml.util.Util;
 /**
  * ...
  * @author Gulg
  */
-class sml.api.Chat extends ApiClass
+class sml.api.classes.Chat extends ApiClass
 {
 	
 	public function Chat(api:Api) 
@@ -60,7 +60,7 @@ class sml.api.Chat extends ApiClass
 		});
 	}
 	
-	public function sendMessage(message:String, dispatch:Boolean): Void 
+	public function sendMessage(message:String, dispatch:Boolean):Void 
 	{
 		_global.I.FMSApi.ChatMessage(message, !dispatch);
 	}

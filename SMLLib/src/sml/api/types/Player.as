@@ -4,7 +4,7 @@ import sml.api.interfaces.IComparable;
  * ...
  * @author Gulg
  */
-class sml.api.Player implements IComparable
+class sml.api.types.Player implements IComparable
 {
 	
 	public var userId:Number;

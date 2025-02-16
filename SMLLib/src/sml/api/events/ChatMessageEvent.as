@@ -1,4 +1,4 @@
-import sml.api.Player;
+import sml.api.types.Player;
 import sml.api.events.Event;
 /**
  * ...
