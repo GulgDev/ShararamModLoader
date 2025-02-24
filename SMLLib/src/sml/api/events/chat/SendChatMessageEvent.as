@@ -3,10 +3,10 @@ import sml.api.events.Event;
  * ...
  * @author Gulg
  */
-class sml.api.events.SendChatMessageEvent extends Event
+class sml.api.events.chat.SendChatMessageEvent extends Event
 {
 	
-	public var type:String = "sendmessage";
+	public static var TYPE:String = "sendmessage";
 	
 	public var text:String;
 	

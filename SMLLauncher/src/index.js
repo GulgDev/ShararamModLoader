@@ -1,6 +1,7 @@
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
+const { pathToFileURL } = require("url");
 const log = require("electron-log");
 const electron = require("electron");
 const { protocol, app, shell, session } = electron;
@@ -20,6 +21,7 @@ class Launcher {
         this._pathNatives = this._getResourcePath("natives");
         this._pathSwf = this._getResourcePath("swf");
         this._pathMods = this._getResourcePath("mods");
+        this._pathProxy = this._getResourcePath("proxy.pac");
 
         if (!fs.existsSync(this._pathMods))
             fs.mkdirSync(this._pathMods);
@@ -116,31 +118,29 @@ class Launcher {
         this._tryActivateWindow(this._wndMain);
     }
 
-    _onReady() {
+    async _onReady() {
         this._registerProtocols();
-        this._createStartupWindow();
+        await this._createStartupWindow();
     }
 
-    _createStartupWindow() {
+    async _createStartupWindow() {
         this._createTray();
-        this._createMainWindow();
+        await this._createMainWindow();
     }
 
-    _createMainWindow() {
+    async _createMainWindow() {
         if (this._wndMain)
             throw new Error("Main window already exists");
+
+        if (fs.existsSync(this._pathProxy))
+            await session.fromPartition("persist:fetch").setProxy({ pacScript: "data:application/x-ns-proxy-autoconfig;base64," + fs.readFileSync(this._pathProxy).toString("base64") });
 
         this._wndMain = new electron.BrowserWindow({
             width: WIN_WIDTH,
             height: WIN_HEIGHT,
             webPreferences: {
-                webSecurity: false,
                 plugins: true,
-                nodeIntegration: false,
-                allowRunningInsecureContent: true,
-                allowDisplayingInsecureContent: true,
-                experimentalFeatures: true,
-                nativeWindowOpen: true,
+                enableRemoteModule: false,
                 affinity: "window"
             },
             backgroundColor: BKG_COLOR
@@ -172,8 +172,8 @@ class Launcher {
                 label: "Очистить кэш",
                 click: () => this._onTrayClearCache()
             }, {
-                label: "Открыть папку патчей",
-                click: () => this._onTrayOpenPatchFolder()
+                label: "Открыть папку с модами",
+                click: () => this._onTrayOpenModsFolder()
             }, {
                 type: "separator"
             }, {
@@ -192,8 +192,8 @@ class Launcher {
         session.defaultSession.clearCache();
     }
 
-    _onTrayOpenPatchFolder() {
-        shell.openPath(this._pathSwf);
+    _onTrayOpenModsFolder() {
+        shell.openPath(this._pathMods);
     }
 
     _onTrayClose() {

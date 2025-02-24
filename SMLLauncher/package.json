@@ -1,7 +1,7 @@
 {
   "name": "shararammodloader",
   "productName": "ShararamModLoader",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "main": "src/index.js",
   "description": "Загрузчик модов для Шарарама",
   "scripts": {
@@ -15,8 +15,16 @@
       "packagerConfig": {
         "asar": true,
         "icon": "res/shararam",
-        "extraResource": ["swf", "natives"],
-        "ignore": [".gitignore", "swf", "mods", "natives"]
+        "extraResource": [
+          "swf",
+          "natives"
+        ],
+        "ignore": [
+          ".gitignore",
+          "swf",
+          "mods",
+          "natives"
+        ]
       },
       "makers": [
         {
@@ -44,7 +52,7 @@
   },
   "keywords": [],
   "author": "gulg",
-  "license": "ISC",
+  "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",
     "@electron-forge/maker-deb": "^6.4.2",

@@ -1,5 +1,4 @@
 import mx.events.EventDispatcher;
-import sml.Main;
 import sml.api.Api;
 /**
  * ...

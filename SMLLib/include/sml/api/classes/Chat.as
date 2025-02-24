@@ -1,20 +1,18 @@
-import sml.Main;
-import sml.api.Api;
-import sml.api.ApiClass;
-import sml.api.Chat;
-import sml.api.events.ChatMessageEvent;
-import sml.api.events.Event;
+import mx.events.EventDispatcher;
+import sml.api.events.remote.RemoteMessageEvent;
+import sml.api.interfaces.IApiClass;
 import sml.api.types.Player;
-import sml.api.events.SendChatMessageEvent;
+import sml.api.events.chat.ChatMessageEvent;
+import sml.api.events.chat.SendChatMessageEvent;
 import sml.util.Util;
 /**
  * ...
  * @author Gulg
  */
-intrinsic class sml.api.classes.Chat extends ApiClass
+intrinsic class sml.api.classes.Chat extends EventDispatcher implements IApiClass
 {
-	public function Chat(api:Api);
+	public function init() : Void;
 
-	public function sendMessage(message:String, dispatch:Boolean) : Void;
+	public function sendMessage(message:String) : Void;
 
 }

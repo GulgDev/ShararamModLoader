@@ -1,5 +1,4 @@
 import mx.events.EventDispatcher;
-import sml.util.Promise;
 /**
  * Promise implementation in AS2
  * @author Gulg
@@ -7,16 +6,18 @@ import sml.util.Promise;
 class sml.util.Promise
 {
 	
-	private var dispatcher:EventDispatcher = new EventDispatcher();
+	private var dispatcher:EventDispatcher;
 	
 	private var status:String = "pending";
 	private var value;
 	
 	public function Promise(executor:Function) 
 	{
+		this.dispatcher = new EventDispatcher();
+		
 		var _this:Promise = this;
 		
-		var resolve: Function = function (value):Void 
+		var resolve:Function = function (value):Void 
 		{
 			if (_this.status === "pending") {
                 _this.status = "fulfilled";
@@ -25,7 +26,7 @@ class sml.util.Promise
             }
 		};
 		
-		var reject: Function = function (reason):Void 
+		var reject:Function = function (reason):Void 
 		{
 			if (_this.status === "pending") {
                 _this.status = "rejected";
@@ -37,7 +38,23 @@ class sml.util.Promise
 		executor(resolve, reject);
 	}
 	
-	public function then(onFulfilled:Function, onRejected:Function):Void 
+	public static function resolve(value:Object):Promise 
+	{
+		return new Promise(function (resolve:Function, reject:Function):Void 
+		{
+			resolve(value);
+		});
+	}
+	
+	public static function reject(reason:Object):Promise 
+	{
+		return new Promise(function (resolve:Function, reject:Function):Void 
+		{
+			reject(reason);
+		});
+	}
+	
+	public function then(onFulfilled:Function, onRejected:Function):Promise 
 	{
 		switch (this.status) 
 		{
@@ -58,11 +75,12 @@ class sml.util.Promise
 				onRejected(this.value);
 				break;
 		}
+		return this;
 	}
 	
-	public function catch_(onRejected:Function):Void 
+	public function catch_(onRejected:Function):Promise 
 	{
-		then(undefined, onRejected);
+		return then(undefined, onRejected);
 	}
 	
 }

@@ -6,7 +6,7 @@ import sml.api.events.Event;
  */
 intrinsic class sml.api.events.ChatMessageEvent extends Event
 {
-	public var type : String;
+	static public var TYPE : String;
 	public var from : Player;
 	public var text : String;
 

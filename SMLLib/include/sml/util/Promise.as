@@ -11,8 +11,12 @@ intrinsic class sml.util.Promise
 
 	public function Promise(executor:Function);
 
-	public function then(onFulfilled:Function, onRejected:Function) : Void;
+	static public function resolve(value:Object) : Promise;
 
-	public function catch_(onRejected:Function) : Void;
+	static public function reject(reason:Object) : Promise;
+
+	public function then(onFulfilled:Function, onRejected:Function) : Promise;
+
+	public function catch_(onRejected:Function) : Promise;
 
 }

@@ -1,68 +1,59 @@
-import sml.Main;
-import sml.api.Api;
-import sml.api.ApiClass;
-import sml.api.Chat;
-import sml.api.events.ChatMessageEvent;
-import sml.api.events.Event;
+import mx.events.EventDispatcher;
+import sml.api.events.remote.RemoteMessageEvent;
+import sml.api.interfaces.IApiClass;
 import sml.api.types.Player;
-import sml.api.events.SendChatMessageEvent;
+import sml.api.events.chat.ChatMessageEvent;
+import sml.api.events.chat.SendChatMessageEvent;
 import sml.util.Util;
 /**
  * ...
  * @author Gulg
  */
-class sml.api.classes.Chat extends ApiClass
+class sml.api.classes.Chat extends EventDispatcher implements IApiClass
 {
 	
-	public function Chat(api:Api) 
+	public function init():Void 
 	{
-		super(api);
 		var _this:Chat = this;
-		api.addEventListener("start", function ():Void 
+		Shararam.base.addEventListener("load", function ():Void 
 		{
-			Util.patch(_global.I.FMSApi, {
-				ChatMessage: function ($this:Object, text:String, noDispatch:Boolean):Void 
+			Util.patch(_global.server.FMSApi.prototype, {
+				ChatMessage: function (_super, text:String):Void 
 				{
-					if (!noDispatch) {
-						var event:SendChatMessageEvent = new SendChatMessageEvent(text);
-						_this.dispatchEvent(event);
-						if (event._preventDefault) return;
-						text = event.text;
-					}
-					$this.ChatMessage.apply(this, [text]);
+					var event:SendChatMessageEvent = new SendChatMessageEvent(text);
+					_this.dispatchEvent(event);
+					if (event._preventDefault) return;
+					text = event.text;
+					_super.ChatMessage(text);
 				}
 			});
 		});
-		api.addEventListener("connect", function ():Void 
+		Shararam.remote.addEventListener("connect", function ():Void 
 		{
-			Util.patch(_global.Base.Instance.rtmpConnectionHandler.nc, {
-				_C: function ($this:Object, userId:Number, text:String):Void 
+			Shararam.remote.handle("_C", function (event:RemoteMessageEvent):Void 
+			{
+				var userName:String = undefined;
+				if (_global.I.GameController)
 				{
-					var userName:String = undefined;
-					if(_global.I.GameController)
-					{
-						userName = _global.$.SelectObject(_global.I.GameController.GetGameUsers(), "ID", userId).Name;
-					}
-					else
-					{
-						var avatar = _global.I.AvatarController.GetUserAvatar(userId);
-						userName = avatar.AvatarData.Name;
-					}
-					{
-						var event:ChatMessageEvent = new ChatMessageEvent(new Player(userId, userName), text);
-						_this.dispatchEvent(event);
-						if (event._preventDefault) return;
-						text = event.text;
-					}
-					$this._C.apply(this, [userId, text]);
+					userName = _global.$.SelectObject(_global.I.GameController.GetGameUsers(), "ID", event.args[0]).Name;
 				}
+				else
+				{
+					var avatar = _global.I.AvatarController.GetUserAvatar(event.args[0]);
+					userName = avatar.AvatarData.Name;
+				}
+				var chatEvent:ChatMessageEvent = new ChatMessageEvent(new Player(event.args[0], userName), event.args[1]);
+				_this.dispatchEvent(chatEvent);
+				if (chatEvent._preventDefault)
+					event.preventDefault();
+				event.args[1] = chatEvent.text;
 			});
 		});
 	}
 	
-	public function sendMessage(message:String, dispatch:Boolean):Void 
+	public function sendMessage(message:String):Void 
 	{
-		_global.I.FMSApi.ChatMessage(message, !dispatch);
+		Shararam.remote.sendServer("_C", [message]);
 	}
 	
 }

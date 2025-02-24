@@ -4,4 +4,6 @@ swf/
 package-lock.json
 bin/
 obj/
+include/
 out/
+proxy.pac

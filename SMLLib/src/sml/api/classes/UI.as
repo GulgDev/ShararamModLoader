@@ -1,19 +1,16 @@
-import sml.api.Api;
-import sml.api.ApiClass;
-import sml.api.classes.UI;
+import mx.events.EventDispatcher;
 import sml.api.const.MessageBox;
-import sml.util.ArrayBuilder;
-import sml.util.Util;
+import sml.api.interfaces.IApiClass;
 /**
  * ...
  * @author Gulg
  */
-class sml.api.classes.UI extends ApiClass
+class sml.api.classes.UI extends EventDispatcher implements IApiClass
 {
 	
-	public function UI(api:Api) 
+	public function init():Void 
 	{
-		super(api);
+		
 	}
 	
 	public function messageBox(text:String, style:Number, buttons:Number, callback:Function):Void 
@@ -34,7 +31,7 @@ class sml.api.classes.UI extends ApiClass
 		var data:Object = {
 			type: type,
 			text1: _global.I.ResourceManager.FormatString(text),
-			buttons: (new ArrayBuilder(MessageBox.BUTTONS))
+			buttons: MessageBox.BUTTONS
 				.filter(function (button:String):Boolean 
 				{
 					return (buttons & MessageBox[button]) !== 0;
@@ -48,8 +45,7 @@ class sml.api.classes.UI extends ApiClass
 							callback(MessageBox[button]);
 						}
 					};
-				})
-				.build(),
+				}),
 			close_btn: (buttons & MessageBox.CLOSE) && {
 				show: true,
 				callback: callback
@@ -82,6 +78,11 @@ class sml.api.classes.UI extends ApiClass
 	public function showSaveCancel(text:String, callback:Function):Void 
 	{
 		this.showInfo(text, MessageBox.SAVE | MessageBox.CANCEL, callback);
+	}
+	
+	public function showError(text:String, callback:Function):Void 
+	{
+		this.showWarning(text, MessageBox.OK, callback);
 	}
 	
 }

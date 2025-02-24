@@ -1,19 +1,24 @@
-import mx.events.EventDispatcher;
-import sml.Main;
 import sml.api.classes.Chat;
+import sml.api.classes.External;
+import sml.api.classes.Log;
 import sml.api.classes.Players;
+import sml.api.classes.Remote;
+import sml.api.classes.Resources;
 import sml.api.classes.UI;
-import sml.util.Util;
+import sml.api.types.Module;
+import sml.util.extensions.ArrayExtensions;
 /**
  * ...
  * @author Gulg
  */
-intrinsic class sml.api.Api extends EventDispatcher
+intrinsic class sml.api.Api
 {
-	public var chat : Chat;
-	public var players : Players;
-	public var ui : UI;
+	static public function main(base:Module) : Void;
 
-	public function Api();
+	static private function extendPrototypes() : Void;
+
+	static private function createApi() : Void;
+
+	static private function initApi() : Void;
 
 }

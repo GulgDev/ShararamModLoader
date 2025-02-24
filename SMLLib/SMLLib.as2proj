@@ -8,9 +8,9 @@
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
-    <movie version="8" />
+    <movie version="9" />
     <movie minorVersion="0" />
-    <movie platform="Custom" />
+    <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
@@ -25,9 +25,9 @@
     <option includePackage="src" />
     <option useMain="False" />
     <option useMX="False" />
-    <option warnUnusedImports="False" />
-    <option traceMode="Disable" />
-    <option traceFunction="" />
+    <option warnUnusedImports="True" />
+    <option traceMode="CustomFunction" />
+    <option traceFunction="Shararam.trace" />
     <option libraryPrefix="SMLLib" />
     <option excludeFile="" />
     <option groupClasses="False" />
@@ -36,7 +36,7 @@
   </build>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <!-- example: <compile path="..." /> -->
+    <compile path="src\sml\api\Api.as" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>
@@ -54,7 +54,7 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Default" />
+    <option testMovie="Unknown" />
     <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->

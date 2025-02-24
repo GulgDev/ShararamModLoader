@@ -1,5 +1,6 @@
 import sml.Main;
 import sml.api.Api;
+import sml.api.types.Module;
 import sml.util.Util;
 /**
  * ShararamModLoader entry point. Starts Shararam and loads SML mods
@@ -8,11 +9,8 @@ import sml.util.Util;
 class sml.Main 
 {
 	
-	private static var sharabaseUrl:String = "https://www.shararam.ru/base.swf?noproxy";
-	
-	public var api:Api;
-	public var sharabase:MovieClip;
-	
+	private var baseModule:Module;
+	private var sharabase:MovieClip;
 	private var modCount:Number;
 	private var mcLoader:MovieClipLoader = new MovieClipLoader();
 	
@@ -20,14 +18,15 @@ class sml.Main
 	{
 		System.security.allowDomain("*");
 		var main:Main = new Main();
-		Shararam.api = main.api;
+		Api.main(main.baseModule);
 		main.start();
 	}
 	
 	public function Main() 
 	{
 		sharabase = _root.createEmptyMovieClip("ShararamBase_MC", 0);
-		api = new Api();
+		baseModule = new Module(sharabase, "base");
+		baseModule.path = "https://www.shararam.ru/base.swf?noproxy";
 		mcLoader.addListener(this);
 	}
 	
@@ -62,24 +61,8 @@ class sml.Main
 	
 	public function onLoadInit(mc:MovieClip):Void 
 	{
-		if (mc === sharabase) {
-			this.api.dispatchEvent({ type: "start" });
-		} else {
-			modCount--;
-			if (modCount === 0) {
-				var apply:Function = Function.prototype.apply;
-				var _this:Main = this;
-				Function.prototype.apply = function(thisObject:Object, argArray:Array) {
-					if (thisObject instanceof MovieClip) {
-						Function.prototype.apply = apply;
-						_this.api.dispatchEvent({ type: "init" });
-					}
-					return apply.apply(this, [thisObject, argArray]);
-				}
-				
-				mcLoader.loadClip(sharabaseUrl, sharabase);
-			}
-		}
+		if (--modCount === 0)
+			baseModule.load();
 	}
 	
 }

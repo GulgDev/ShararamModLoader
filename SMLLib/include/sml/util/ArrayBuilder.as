@@ -16,4 +16,8 @@ intrinsic class sml.util.ArrayBuilder
 
 	public function filter(callback:Function, thisArg:Object) : ArrayBuilder;
 
+	public function some(callback:Function, thisArg:Object) : Boolean;
+
+	public function every(callback:Function, thisArg:Object) : Boolean;
+
 }
